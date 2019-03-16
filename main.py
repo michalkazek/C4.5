@@ -20,25 +20,27 @@ def start():
     obj.split_row(file)
     obj.create_atr_dict()
     obj.count_attributes()
-    #obj.print_list(obj.column_instances_list)
+    obj.print_list(obj.column_instances_list)
     #obj.print_dictionary(obj.decisions_for_attributes_dict)
     obj.count_entropy()
+    print("Entropy: ", obj.entropy_value)
+
 
 class Program:
 
     def __init__(self):
         self.input_matrix = []
-        self.attr_column_number = 0
+        self.column_number = 0
         self.row_number = 0
         self.column_instances_list = []
         self.decisions_for_attributes_dict = {}
         self.entropy_value = 0
-    
+
     def split_row(self, file): 
         for row in file:
             splitted_row = (row.strip()).split(",")            
             splitted_row = list(map(int, splitted_row))
-            self.attr_column_number = len(splitted_row)
+            self.column_number = len(splitted_row)
             self.input_matrix.append(splitted_row)       
             self.row_number += 1 
         self.print_list(self.input_matrix)
@@ -59,32 +61,31 @@ class Program:
             #print(input_dict[x][0])
         
     def create_atr_dict(self):
-        for it in range(self.attr_column_number):
+        for it in range(self.column_number):
             self.column_instances_list.append({})
-            if it != self.attr_column_number-1:
+            if it != self.column_number-1:
                 self.decisions_for_attributes_dict[it] = {}
         
     def count_attributes(self):
         for row in self.input_matrix:
-            for x in range(self.attr_column_number):
+            for x in range(self.column_number):
                 if row[x] in self.column_instances_list[x]:
                     self.column_instances_list[x][row[x]] += 1
                 else:
                     self.column_instances_list[x][row[x]] = 1
-                if x != self.attr_column_number-1:
+                if x != self.column_number-1:
                     if row[x] not in self.decisions_for_attributes_dict[x]:
                         self.decisions_for_attributes_dict[x][row[x]] = {}
-                    if row[self.attr_column_number-1] not in self.decisions_for_attributes_dict[x][row[x]]:
-                        self.decisions_for_attributes_dict[x][row[x]][row[self.attr_column_number-1]] = 1
+                    if row[self.column_number-1] not in self.decisions_for_attributes_dict[x][row[x]]:
+                        self.decisions_for_attributes_dict[x][row[x]][row[self.column_number-1]] = 1
                     else:
-                        self.decisions_for_attributes_dict[x][row[x]][row[self.attr_column_number-1]] += 1
+                        self.decisions_for_attributes_dict[x][row[x]][row[self.column_number-1]] += 1
 
     def count_entropy(self):
-        tmp = self.column_instances_list[self.attr_column_number-1][0]/self.row_number
-        tmp2 = self.column_instances_list[self.attr_column_number-1][1]/self.row_number
-        self.entropy_value = ((tmp * math.log2(tmp))+(tmp2 * math.log2(tmp2))) * -1
-        print("Entropy: ", self.entropy_value)
-
+        for dict_element in self.column_instances_list[self.column_number-1]:
+            p = self.column_instances_list[self.column_number-1][dict_element]/self.row_number
+            self.entropy_value += (p * math.log2(p))
+        self.entropy_value *= -1
 
 
 start()
