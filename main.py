@@ -21,7 +21,7 @@ def start():
     obj.split_row_from_input_file(file)
     obj.print_list(obj.input_matrix, "Input matrix:")
     obj.create_structures()
-    obj.count_attributes()
+    obj.count_number_of_values()
     obj.print_list(obj.column_values_list, "Values in each column:")
     obj.print_dictionary(obj.decisions_for_attributes_dict, "Decisions:")
     obj.count_entropy()
@@ -32,8 +32,9 @@ class Program:
 
     def __init__(self):
         self.input_matrix = []
-        self.column_number = 0
-        self.row_number = 0
+        self.number_of_columns = 0  # With decission column
+        self.number_of_attributes = 0  # Without decission column
+        self.number_of_rows = 0
         self.column_values_list = []  # List of values in every column with their number
         self.decisions_for_attributes_dict = {}  # Dictionary contains the number of decisions instances for each attribute(column)
         self.entropy_value = 0
@@ -58,34 +59,35 @@ class Program:
         for row in input_file:
             splitted_row = (row.strip()).split(",")            
             splitted_row = list(map(int, splitted_row))
-            self.column_number = len(splitted_row)
+            self.number_of_columns = len(splitted_row)
             self.input_matrix.append(splitted_row)
-        self.row_number = len(self.input_matrix)
+        self.number_of_rows = len(self.input_matrix)
+        self.number_of_attributes = self.number_of_columns-1
 
     def create_structures(self):
-        for it in range(self.column_number):
+        for it in range(self.number_of_columns):
             self.column_values_list.append({})
-            if it != self.column_number-1:
+            if it != self.number_of_attributes:
                 self.decisions_for_attributes_dict[it] = {}
         
-    def count_attributes(self):
+    def count_number_of_values(self):
         for row in self.input_matrix:
-            for x in range(self.column_number):
-                if row[x] in self.column_values_list[x]:
-                    self.column_values_list[x][row[x]] += 1
+            for it in range(self.number_of_columns):
+                if row[it] in self.column_values_list[it]:
+                    self.column_values_list[it][row[it]] += 1
                 else:
-                    self.column_values_list[x][row[x]] = 1
-                if x != self.column_number-1:
-                    if row[x] not in self.decisions_for_attributes_dict[x]:
-                        self.decisions_for_attributes_dict[x][row[x]] = {}
-                    if row[self.column_number-1] not in self.decisions_for_attributes_dict[x][row[x]]:
-                        self.decisions_for_attributes_dict[x][row[x]][row[self.column_number-1]] = 1
+                    self.column_values_list[it][row[it]] = 1
+                if it != self.number_of_attributes:
+                    if row[it] not in self.decisions_for_attributes_dict[it]:
+                        self.decisions_for_attributes_dict[it][row[it]] = {}
+                    if row[self.number_of_attributes] not in self.decisions_for_attributes_dict[it][row[it]]:
+                        self.decisions_for_attributes_dict[it][row[it]][row[self.number_of_attributes]] = 1
                     else:
-                        self.decisions_for_attributes_dict[x][row[x]][row[self.column_number-1]] += 1
+                        self.decisions_for_attributes_dict[it][row[it]][row[self.number_of_attributes]] += 1
 
     def count_entropy(self):
-        for dict_element in self.column_values_list[self.column_number-1]:
-            p = self.column_values_list[self.column_number-1][dict_element]/self.row_number
+        for dict_element in self.column_values_list[self.number_of_attributes]:
+            p = self.column_values_list[self.number_of_attributes][dict_element]/self.number_of_rows
             self.entropy_value += (p * math.log2(p))
         self.entropy_value *= -1
 
