@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-
+import math
 # 1.wczytywanie pliku
 # 2.liczenie wystąpień elementu dla każdej kolumny
 # 3.dla każdego z elementow policzyc ile decyzji jest 
+# 4.etropia (napisać funkcje)
+# 5.info
+# 6.prztosr_infomracji (gain)
+# 7.split_info
 
 
 def get_data_from_file(path):
@@ -16,26 +20,31 @@ def start():
     obj.split_row(file)
     obj.create_atr_dict()
     obj.count_attributes()
+    obj.print_list(obj.column_instances_list)
     obj.print_dictionary(obj.decisions_for_attributes_dict)
+    obj.entropy()
 
 class Program:
 
     def __init__(self):
         self.input_matrix = []
         self.attr_column_number = 0
+        self.row_number = 0
         self.column_instances_list = []
         self.decisions_for_attributes_dict = {}
-        self.tmp_list = []  # list created to test - contains all occured numbers
+        self.entropy_value = 0
     
     def split_row(self, file): 
         for row in file:
             splitted_row = (row.strip()).split(",")            
             splitted_row = list(map(int, splitted_row))
-            self.attr_column_number = len(splitted_row) - 1
-            self.input_matrix.append(splitted_row)           
+            self.attr_column_number = len(splitted_row)
+            self.input_matrix.append(splitted_row)       
+            self.row_number += 1 
         self.print_list(self.input_matrix)
 
     def print_list(self, input_list):  #development only method
+        print()
         for line in input_list:
             print(line)
 
@@ -52,7 +61,8 @@ class Program:
     def create_atr_dict(self):
         for it in range(self.attr_column_number):
             self.column_instances_list.append({})
-            self.decisions_for_attributes_dict[it] = {}
+            if it != self.attr_column_number-1:
+                self.decisions_for_attributes_dict[it] = {}
         
     def count_attributes(self):
         for row in self.input_matrix:
@@ -61,24 +71,20 @@ class Program:
                     self.column_instances_list[x][row[x]] += 1
                 else:
                     self.column_instances_list[x][row[x]] = 1
-                if row[x] not in self.decisions_for_attributes_dict[x]:
-                    self.decisions_for_attributes_dict[x][row[x]] = {}
-                if row[self.attr_column_number] not in self.decisions_for_attributes_dict[x][row[x]]:
-                    self.decisions_for_attributes_dict[x][row[x]][row[self.attr_column_number]] = 1
-                else:
-                    self.decisions_for_attributes_dict[x][row[x]][row[self.attr_column_number]] += 1
+                if x != self.attr_column_number-1:
+                    if row[x] not in self.decisions_for_attributes_dict[x]:
+                        self.decisions_for_attributes_dict[x][row[x]] = {}
+                    if row[self.attr_column_number-1] not in self.decisions_for_attributes_dict[x][row[x]]:
+                        self.decisions_for_attributes_dict[x][row[x]][row[self.attr_column_number-1]] = 1
+                    else:
+                        self.decisions_for_attributes_dict[x][row[x]][row[self.attr_column_number-1]] += 1
 
-                # print(row[x])
-        # print(self.column_instances_list)
-
-    def x(self):
-        print()
-        for x in self.column_instances_list:
-            print(x)
-            for y in x:
-                print(y, end=" ")
-            print()
-        print()
+    def entropy(self):
+        tmp = self.column_instances_list[self.attr_column_number-1][0]/self.row_number
+        tmp2 = self.column_instances_list[self.attr_column_number-1][1]/self.row_number
+        self.entropy_value = tmp*math.log(tmp,2)+tmp2*math.log(tmp2,2)*-1
+        print(self.entropy_value)
+        
 
 
 
