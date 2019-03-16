@@ -10,22 +10,12 @@ import math
 # 7.split_info
 
 
-def get_data_from_file(path):
-    file = open(path, "r")
-    return file
+class FileReader:
 
-def start():
-    file = get_data_from_file("test2.txt")
-
-    obj = Program()
-    obj.split_row_from_input_file(file)
-    obj.print_list(obj.input_matrix, "Input matrix:")
-    obj.create_structures()
-    obj.count_number_of_values()
-    obj.print_list(obj.column_values_list, "Values in each column:")
-    obj.print_dictionary(obj.decisions_for_attributes_dict, "Decisions:")
-    obj.count_entropy()
-    print("Entropy: ", obj.entropy_value)
+    @staticmethod
+    def get_data_from_file(path):
+        file = open(path, "r")
+        return file
 
 
 class Program:
@@ -46,12 +36,12 @@ class Program:
             print(line)
 
     @staticmethod
-    def print_dictionary(input_dict, input_header=""): # Development only method - used to print decisions dictionary
+    def print_dictionary(input_dict, input_header=""):  # Development only method - used to print decisions dictionary
         print("\n"+input_header)
         for x in input_dict:
             print("Column", x)
             for y in input_dict[x]:
-                print("\tFor {0}".format(y),"->")
+                print("\tFor {0}".format(y), "->")
                 for z in input_dict[x][y]:
                     print("\t\t decission {0} occurs: {1}".format(z, input_dict[x][y][z]))
 
@@ -92,7 +82,23 @@ class Program:
         self.entropy_value *= -1
 
 
-start()
+class Initial:
+
+    @staticmethod
+    def start():
+        file_reader = FileReader()
+        file = file_reader.get_data_from_file("test2.txt")
+
+        obj = Program()
+        obj.split_row_from_input_file(file)
+        obj.print_list(obj.input_matrix, "Input matrix:")
+        obj.create_structures()
+        obj.count_number_of_values()
+        obj.print_list(obj.column_values_list, "Values in each column:")
+        obj.print_dictionary(obj.decisions_for_attributes_dict, "Decisions:")
+        obj.count_entropy()
+        print("\n"+"Entropy: ", obj.entropy_value)
 
 
-
+init = Initial()
+init.start()
