@@ -20,9 +20,9 @@ def start():
     obj.split_row(file)
     obj.create_atr_dict()
     obj.count_attributes()
-    obj.print_list(obj.column_instances_list)
-    obj.print_dictionary(obj.decisions_for_attributes_dict)
-    obj.entropy()
+    #obj.print_list(obj.column_instances_list)
+    #obj.print_dictionary(obj.decisions_for_attributes_dict)
+    obj.count_entropy()
 
 class Program:
 
@@ -79,14 +79,11 @@ class Program:
                     else:
                         self.decisions_for_attributes_dict[x][row[x]][row[self.attr_column_number-1]] += 1
 
-    def entropy(self):
+    def count_entropy(self):
         tmp = self.column_instances_list[self.attr_column_number-1][0]/self.row_number
         tmp2 = self.column_instances_list[self.attr_column_number-1][1]/self.row_number
-        self.entropy_value = tmp*math.log(tmp,2)+tmp2*math.log(tmp2,2)*-1
-        print(self.entropy_value)
-        
-
-
+        self.entropy_value = ((tmp * math.log2(tmp))+(tmp2 * math.log2(tmp2))) * -1
+        print("Entropy: ", self.entropy_value)
 
 
 
