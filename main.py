@@ -75,11 +75,13 @@ class Program:
                     else:
                         self.decisions_for_attributes_dict[it][row[it]][row[self.number_of_attributes]] += 1
 
-    def count_entropy(self):
+    def calculate_entropy(self):
         for dict_element in self.column_values_list[self.number_of_attributes]:
             p = self.column_values_list[self.number_of_attributes][dict_element]/self.number_of_rows
             self.entropy_value += (p * math.log2(p))
         self.entropy_value *= -1
+
+    #def calculate_info(self):
 
 
 class Initial:
@@ -96,7 +98,7 @@ class Initial:
         obj.count_number_of_values()
         obj.print_list(obj.column_values_list, "Values in each column:")
         obj.print_dictionary(obj.decisions_for_attributes_dict, "Decisions:")
-        obj.count_entropy()
+        obj.calculate_entropy()
         print("\n"+"Entropy: ", obj.entropy_value)
 
 
