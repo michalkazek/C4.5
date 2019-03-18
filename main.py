@@ -77,17 +77,23 @@ class Program:
                     else:
                         self.decisions_for_attributes_dict[it][row[it]][row[self.number_of_attributes]] += 1
 
-    def calculate_entropy(self):
-        for dict_element in self.column_values_list[self.number_of_attributes]:
-            p = self.column_values_list[self.number_of_attributes][dict_element]/self.number_of_rows
-            self.global_entropy_value += (p * math.log2(p))
-        self.global_entropy_value *= -1
+    @staticmethod
+    def calculate_entropy(p):
+        return p * math.log2(p)
 
     def calculate_local_entropy(self):
-        for dict_element in self.decisions_for_attributes_dict[0][0]:
-            p = self.decisions_for_attributes_dict[0][0][dict_element]/self.column_values_list[0][0]
-            self.local_entropy_value += (p * math.log2(p))
-        self.local_entropy_value *= -1
+        for column in range(self.number_of_columns):
+            for dict_element in self.decisions_for_attributes_dict[column][0]:
+                p = self.decisions_for_attributes_dict[column][0][dict_element]/self.column_values_list[column][0]
+                self.local_entropy_value += self.calculate_entropy(p)
+            self.local_entropy_value *= -1
+            print("Column {0}: {1}".format(column,self.local_entropy_value))
+
+    def calculate_global_entropy(self):
+        for dict_element in self.column_values_list[self.number_of_attributes]:
+            p = self.column_values_list[self.number_of_attributes][dict_element]/self.number_of_rows
+            self.global_entropy_value += self.calculate_entropy(p)
+        self.global_entropy_value *= -1
 
     def calculate_info(self):
         for x in self.column_values_list[0]:
@@ -111,9 +117,9 @@ class Initial:
         obj.count_number_of_values()
         obj.print_list(obj.column_values_list, "Values in each column[column_values_list]:")
         obj.print_dictionary(obj.decisions_for_attributes_dict, "Decisions [decisions_for_attributes_dict]:")
-        obj.calculate_entropy()
+        obj.calculate_global_entropy()
         obj.calculate_local_entropy()
-        obj.calculate_info()
+        #obj.calculate_info()
         print("\n"+"Global entropy: ", obj.global_entropy_value)
         print("\n"+"Local entropy: ", obj.local_entropy_value)
 
