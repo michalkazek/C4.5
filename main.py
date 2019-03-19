@@ -27,9 +27,8 @@ class Program:
         self.number_of_rows = 0
         self.column_values_list = []  # List of values in every column with their number
         self.decisions_for_attributes_dict = {}  # Dictionary contains the number of decisions instances for each attribute(column)
+        self.info_values_list = []
         self.global_entropy_value = 0
-        self.local_entropy_value = 0
-        self.info_value = 0
 
     @staticmethod
     def print_list(input_list, input_header=""):  # Development only method - used to print every list
@@ -77,30 +76,28 @@ class Program:
                     else:
                         self.decisions_for_attributes_dict[it][row[it]][row[self.number_of_attributes]] += 1
 
-    @staticmethod
-    def calculate_entropy(p):
-        return p * math.log2(p)
-
-    def calculate_local_entropy(self):
-        for column in range(self.number_of_columns):
-            for dict_element in self.decisions_for_attributes_dict[column][0]:
-                p = self.decisions_for_attributes_dict[column][0][dict_element]/self.column_values_list[column][0]
-                self.local_entropy_value += self.calculate_entropy(p)
-            self.local_entropy_value *= -1
-            print("Column {0}: {1}".format(column,self.local_entropy_value))
+    def calculate_local_entropy(self, column, attribute_value):
+        entropy_value = 0
+        for element in self.decisions_for_attributes_dict[column][attribute_value]:
+            p = self.decisions_for_attributes_dict[column][attribute_value][element]/self.column_values_list[column][attribute_value]
+            entropy_value += p * math.log2(p)
+        entropy_value *= -1
+        return entropy_value
 
     def calculate_global_entropy(self):
-        for dict_element in self.column_values_list[self.number_of_attributes]:
-            p = self.column_values_list[self.number_of_attributes][dict_element]/self.number_of_rows
-            self.global_entropy_value += self.calculate_entropy(p)
+        for element in self.column_values_list[self.number_of_attributes]:
+            p = self.column_values_list[self.number_of_attributes][element]/self.number_of_rows
+            self.global_entropy_value += p * math.log2(p)
         self.global_entropy_value *= -1
 
     def calculate_info(self):
-        for x in self.column_values_list[0]:
-            part = self.column_values_list[0][x] / self.number_of_rows
-            self.calculate_local_entropy()
-            self.info_value += part * self.local_entropy_value
-            print(part)
+        for column in range(self.number_of_attributes):
+            info_value = 0
+            for attribute_value in self.column_values_list[column]:
+                attribute_part = self.column_values_list[column][attribute_value] / self.number_of_rows
+                info_value += attribute_part * self.calculate_local_entropy(column, attribute_value)
+            self.info_values_list.append(info_value)
+            print(info_value)
 
 
 class Initial:
@@ -118,10 +115,10 @@ class Initial:
         obj.print_list(obj.column_values_list, "Values in each column[column_values_list]:")
         obj.print_dictionary(obj.decisions_for_attributes_dict, "Decisions [decisions_for_attributes_dict]:")
         obj.calculate_global_entropy()
-        obj.calculate_local_entropy()
-        #obj.calculate_info()
-        print("\n"+"Global entropy: ", obj.global_entropy_value)
-        print("\n"+"Local entropy: ", obj.local_entropy_value)
+        obj.calculate_info()
+        print(obj.info_values_list)
+        #print("\n"+"Global entropy: ", obj.global_entropy_value)
+        #print("\n"+"Local entropy: ", obj.local_entropy_value)
 
 
 init = Initial()
