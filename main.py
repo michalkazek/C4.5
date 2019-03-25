@@ -29,6 +29,7 @@ class Program:
         self.decisions_for_attributes_dict = {}  # Dictionary contains the number of decisions instances for each attribute(column)
         self.info_values_list = []  # List containing info function values
         self.gain_values_list = []  # List containing gain for each attribute(column)
+        self.gain_ratio_values_list = []  # List containing gain ratio for each attribute(column)
         self.global_entropy_value = 0
 
     @staticmethod
@@ -103,6 +104,17 @@ class Program:
         for info_value in self.info_values_list:
             self.gain_values_list.append(self.global_entropy_value - info_value)
 
+    def calculate_split_info(self, column):
+        split_info = 0
+        for element in self.column_values_list[column]:
+            p = self.column_values_list[column][element]/self.number_of_rows
+            split_info -= p * math.log2(p)
+        return split_info
+
+    def calculate_gain_ratio(self):
+        for column in range(self.number_of_attributes):
+            self.gain_ratio_values_list.append(self.gain_values_list[column]/self.calculate_split_info(column))
+
 
 class Initial:
 
@@ -121,7 +133,10 @@ class Initial:
         obj.calculate_global_entropy()
         obj.calculate_info()
         obj.calculate_gain_for_attribute()
-        print("\n",obj.gain_values_list)
+        obj.calculate_gain_ratio()
+        print(obj.gain_ratio_values_list)
+        print(obj.gain_values_list)
+        # print("\n",obj.gain_values_list)
         # print("\n"+"Global entropy: ", obj.global_entropy_value)
         # print("\n"+"Local entropy: ", obj.local_entropy_value)
 
