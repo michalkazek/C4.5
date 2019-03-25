@@ -1,30 +1,32 @@
 # -*- coding: utf-8 -*-
 import math
-# to do list
-# 1.wczytywanie pliku
-# 2.liczenie wystąpień elementu dla każdej kolumny
-# 3.dla każdego z elementow policzyc ile decyzji jest 
-# 4.etropia (napisać funkcje)
-# 5.info
-# 6.prztosr_infomracji (gain)
-# 7.split_info
 
 
 class FileReader:
 
-    @staticmethod
-    def get_data_from_file(path):
-        file = open(path, "r")
-        return file
+    def __init__(self):
+        self.file = ""
+        self.number_of_columns = 0
+        self.input_matrix = []
+
+    def get_data_from_file(self, path):
+        self.file = open(path, "r")
+
+    def split_row_from_input_file(self):
+        for row in self.file:
+            splitted_row = (row.strip()).split(",")
+            splitted_row = list(map(int, splitted_row))
+            self.number_of_columns = len(splitted_row)
+            self.input_matrix.append(splitted_row)
 
 
 class Program:
 
-    def __init__(self):
-        self.input_matrix = []
-        self.number_of_columns = 0  # With decission column
-        self.number_of_attributes = 0  # Without decission column
-        self.number_of_rows = 0
+    def __init__(self, input_matrix, number_of_columns):
+        self.input_matrix = input_matrix
+        self.number_of_columns = number_of_columns  # With decission column
+        self.number_of_attributes = number_of_columns - 1  # Without decission column
+        self.number_of_rows = len(input_matrix)
         self.column_values_list = []  # List of values in every column with their number
         self.decisions_for_attributes_dict = {}  # Dictionary contains the number of decisions instances for each attribute(column)
         self.info_values_list = []  # List containing info function values
@@ -47,15 +49,6 @@ class Program:
                 print("\tFor {0}".format(y), "->")
                 for z in input_dict[x][y]:
                     print("\t\t decission {0} occurs: {1}".format(z, input_dict[x][y][z]))
-
-    def split_row_from_input_file(self, input_file):
-        for row in input_file:
-            splitted_row = (row.strip()).split(",")            
-            splitted_row = list(map(int, splitted_row))
-            self.number_of_columns = len(splitted_row)
-            self.input_matrix.append(splitted_row)
-        self.number_of_rows = len(self.input_matrix)
-        self.number_of_attributes = self.number_of_columns-1
 
     def create_structures(self):
         for it in range(self.number_of_columns):
@@ -120,11 +113,11 @@ class Initial:
 
     @staticmethod
     def start():
-        file_reader = FileReader()
-        file = file_reader.get_data_from_file("test2.txt")
+        fr = FileReader()
+        fr.get_data_from_file("test2.txt")
+        fr.split_row_from_input_file()
 
-        obj = Program()
-        obj.split_row_from_input_file(file)
+        obj = Program(fr.input_matrix, fr.number_of_columns)
         obj.print_list(obj.input_matrix, "Input matrix:")
         obj.create_structures()
         obj.count_number_of_values()
