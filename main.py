@@ -116,30 +116,36 @@ class Program:
             self.divide_tree_dict[x] = []
         for row in self.input_matrix:
             self.divide_tree_dict[row[max_index]].append(row)
-        print(self.divide_tree_dict)
+        return self.divide_tree_dict, max_value
 
 
 class Initial:
 
     def __init__(self):
-        pass
+        self.exit = False
 
     @staticmethod
     def start():
         fr = FileReader()
         fr.get_data_from_file("test2.txt")
         fr.split_row_from_input_file()
+        objs = [Program(fr.input_matrix, fr.number_of_columns)]
 
-        obj = Program(fr.input_matrix, fr.number_of_columns)
-        obj.print_list(obj.input_matrix, "Input matrix:")
-        obj.create_structures()
-        obj.count_number_of_values()
-        obj.print_list(obj.column_values_list, "Values in each column[column_values_list]:")
-        obj.print_dictionary(obj.decisions_for_attributes_dict, "Decisions [decisions_for_attributes_dict]:")
-        obj.calculate_global_entropy()
-        obj.calculate_info()
-        obj.calculate_gain_for_attribute()
-        obj.divide_tree()
+        it = 0
+        for obj in objs:
+            obj.print_list(obj.input_matrix, "Iteration {0}:".format(it))
+            obj.create_structures()
+            obj.count_number_of_values()
+            # obj.print_list(obj.column_values_list, "Values in each column[column_values_list]:")
+            # obj.print_dictionary(obj.decisions_for_attributes_dict, "Decisions [decisions_for_attributes_dict]:")
+            obj.calculate_global_entropy()
+            obj.calculate_info()
+            obj.calculate_gain_for_attribute()
+            divide_tree, max_value = obj.divide_tree()
+            if max_value != 0:
+                for element in divide_tree:
+                    objs.append(Program(divide_tree[element], 5))
+            it += 1
         # print(obj.gain_values_list)
         # print("\n",obj.gain_values_list)
         # print("\n"+"Global entropy: ", obj.global_entropy_value)
