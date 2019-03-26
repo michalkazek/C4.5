@@ -32,6 +32,7 @@ class Program:
         self.info_values_list = []  # List containing info function values
         self.gain_values_list = []  # List containing gain for each attribute(column)
         self.gain_ratio_values_list = []  # List containing gain ratio for each attribute(column)
+        self.divide_tree_dict = {}
         self.global_entropy_value = 0
 
     @staticmethod
@@ -108,8 +109,20 @@ class Program:
         for column in range(self.number_of_attributes):
             self.gain_ratio_values_list.append(self.gain_values_list[column]/self.calculate_split_info(column))
 
+    def divide_tree(self):
+        max_value = max(self.gain_values_list)
+        max_index = self.gain_values_list.index(max_value)
+        for x in self.column_values_list[max_index]:
+            self.divide_tree_dict[x] = []
+        for row in self.input_matrix:
+            self.divide_tree_dict[row[max_index]].append(row)
+        print(self.divide_tree_dict)
+
 
 class Initial:
+
+    def __init__(self):
+        pass
 
     @staticmethod
     def start():
@@ -126,9 +139,8 @@ class Initial:
         obj.calculate_global_entropy()
         obj.calculate_info()
         obj.calculate_gain_for_attribute()
-        obj.calculate_gain_ratio()
-        print(obj.gain_ratio_values_list)
-        print(obj.gain_values_list)
+        obj.divide_tree()
+        # print(obj.gain_values_list)
         # print("\n",obj.gain_values_list)
         # print("\n"+"Global entropy: ", obj.global_entropy_value)
         # print("\n"+"Local entropy: ", obj.local_entropy_value)
