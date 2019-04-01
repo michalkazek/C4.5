@@ -116,7 +116,7 @@ class Program:
             self.divide_tree_dict[x] = []
         for row in self.input_matrix:
             self.divide_tree_dict[row[max_index]].append(row)
-        return self.divide_tree_dict, max_value
+        return self.divide_tree_dict, max_value, max_index
 
 
 class Initial:
@@ -129,27 +129,28 @@ class Initial:
         fr = FileReader()
         fr.get_data_from_file("test2.txt")
         fr.split_row_from_input_file()
-        objs = [Program(fr.input_matrix, fr.number_of_columns)]
+        node_list = [Program(fr.input_matrix, fr.number_of_columns)]
 
         it = 0
-        for obj in objs:
-            obj.print_list(obj.input_matrix, "Iteration {0}:".format(it))
-            obj.create_structures()
-            obj.count_number_of_values()
-            # obj.print_list(obj.column_values_list, "Values in each column[column_values_list]:")
-            # obj.print_dictionary(obj.decisions_for_attributes_dict, "Decisions [decisions_for_attributes_dict]:")
-            obj.calculate_global_entropy()
-            obj.calculate_info()
-            obj.calculate_gain_for_attribute()
-            divide_tree, max_value = obj.divide_tree()
+        for node in node_list:
+            node.create_structures()
+            node.count_number_of_values()
+            node.calculate_global_entropy()
+            node.calculate_info()
+            node.calculate_gain_for_attribute()
+            children_list, max_value, max_index = node.divide_tree()
             if max_value != 0:
-                for element in divide_tree:
-                    objs.append(Program(divide_tree[element], 5))
+                tmp_str = "split column {0}".format(max_index)
+                for child in children_list:
+                    node_list.insert(it+1, Program(children_list[child], 5))
+            else:
+                tmp_str = "can't split more"
+            node.print_list(node.input_matrix, "Iteration {0}, {1}:".format(it, tmp_str))
             it += 1
-        # print(obj.gain_values_list)
-        # print("\n",obj.gain_values_list)
-        # print("\n"+"Global entropy: ", obj.global_entropy_value)
-        # print("\n"+"Local entropy: ", obj.local_entropy_value)
+        # print(node.gain_values_list)
+        # print("\n",node.gain_values_list)
+        # print("\n"+"Global entropy: ", node.global_entropy_value)
+        # print("\n"+"Local entropy: ", node.local_entropy_value)
 
 
 init = Initial()
