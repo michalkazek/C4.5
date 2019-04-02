@@ -131,7 +131,7 @@ class Initial:
         fr.split_row_from_input_file()
         node_list = [Program(fr.input_matrix, fr.number_of_columns)]
 
-        it = 0
+        it = 1
         for node in node_list:
             node.create_structures()
             node.count_number_of_values()
@@ -140,12 +140,12 @@ class Initial:
             node.calculate_gain_for_attribute()
             children_list, max_value, max_index = node.divide_tree()
             if max_value != 0:
-                tmp_str = "split column {0}".format(max_index)
+                split_information = "split column {0}".format(max_index)
                 for child in children_list:
-                    node_list.insert(it+1, Program(children_list[child], 5))
+                    node_list.insert(it, Program(children_list[child], node.number_of_columns))
             else:
-                tmp_str = "can't split more"
-            node.print_list(node.input_matrix, "Iteration {0}, {1}:".format(it, tmp_str))
+                split_information = "can't split more"
+            node.print_list(node.input_matrix, "Iteration {0}, {1}:".format(it, split_information))
             it += 1
         # print(node.gain_values_list)
         # print("\n",node.gain_values_list)
