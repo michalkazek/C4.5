@@ -15,7 +15,6 @@ class FileReader:
     def split_row_from_input_file(self):
         for row in self.file:
             splitted_row = (row.strip()).split(",")
-            splitted_row = list(map(int, splitted_row))
             self.number_of_columns = len(splitted_row)
             self.input_matrix.append(splitted_row)
 
@@ -122,16 +121,19 @@ class Program:
 class Initial:
 
     def __init__(self):
-        self.exit = False
+        self.level_list = [0]
 
-    @staticmethod
-    def start():
+    def start(self):
         fr = FileReader()
         fr.get_data_from_file("test2.txt")
         fr.split_row_from_input_file()
         node_list = [Program(fr.input_matrix, fr.number_of_columns)]
 
         it = 1
+        locker_list = []
+        locker_level = -1
+        x = [""]
+
         for node in node_list:
             node.create_structures()
             node.count_number_of_values()
@@ -139,18 +141,38 @@ class Initial:
             node.calculate_info()
             node.calculate_gain_for_attribute()
             children_list, max_value, max_index = node.divide_tree()
+            lock = True
+
             if max_value != 0:
-                split_information = "split column {0}".format(max_index)
+                locker_list.append([0, len(children_list)])
+                locker_level += 1
                 for child in children_list:
+                    x.insert(it, child)
                     node_list.insert(it, Program(children_list[child], node.number_of_columns))
+                    self.level_list.insert(it, locker_level + 1)
             else:
-                split_information = "can't split more"
-            node.print_list(node.input_matrix, "Iteration {0}, {1}:".format(it, split_information))
+                while lock:
+                    locker_list[locker_level][0] += 1
+                    if locker_list[locker_level][0] == locker_list[locker_level][1]:
+                        locker_list.pop(locker_level)
+                        locker_level -= 1
+                        if locker_level < 0:
+                            lock = False
+                    else:
+                        lock = False
+
+            self.print_tree(it, max_value, max_index, x)
             it += 1
-        # print(node.gain_values_list)
-        # print("\n",node.gain_values_list)
-        # print("\n"+"Global entropy: ", node.global_entropy_value)
-        # print("\n"+"Local entropy: ", node.local_entropy_value)
+        print(self.level_list)
+
+    def print_tree(self, it, max_value, max_index, x):
+        if it == 1:
+            print("A{0}:".format(max_index))
+        else:
+            if max_value != 0:
+                print("{0}{1}{2}A{3}:".format("------" * self.level_list[it - 1], int(x[it-1]),"--", max_index))
+            else:
+                print("{0}{1}".format("------" * self.level_list[it - 1], int(x[it-1])))
 
 
 init = Initial()
