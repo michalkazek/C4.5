@@ -121,7 +121,8 @@ class Program:
 class Initial:
 
     def __init__(self):
-        self.level_list = [0]
+        self.tree_depth_list = [0]
+        self.attribute_value_list = [""]
 
     def start(self):
         fr = FileReader()
@@ -129,11 +130,9 @@ class Initial:
         fr.split_row_from_input_file()
         node_list = [Program(fr.input_matrix, fr.number_of_columns)]
 
+        children_number_list = []
+        tree_depth = -1
         it = 1
-        locker_list = []
-        locker_level = -1
-        divide_values_list = [""]
-
         for node in node_list:
             node.create_structures()
             node.count_number_of_values()
@@ -142,36 +141,34 @@ class Initial:
             node.calculate_gain_for_attribute()
             children_list, max_value, max_index = node.divide_tree()
             lock = True
-
             if max_value != 0:
-                locker_list.append([0, len(children_list)])
-                locker_level += 1
+                children_number_list.append([0, len(children_list)])
+                tree_depth += 1
                 for child in children_list:
-                    divide_values_list.insert(it, child)
+                    self.attribute_value_list.insert(it, child)
                     node_list.insert(it, Program(children_list[child], node.number_of_columns))
-                    self.level_list.insert(it, locker_level + 1)
+                    self.tree_depth_list.insert(it, tree_depth + 1)
             else:
                 while lock:
-                    locker_list[locker_level][0] += 1
-                    if locker_list[locker_level][0] == locker_list[locker_level][1]:
-                        locker_list.pop(locker_level)
-                        locker_level -= 1
-                        if locker_level < 0:
+                    children_number_list[tree_depth][0] += 1
+                    if children_number_list[tree_depth][0] == children_number_list[tree_depth][1]:
+                        children_number_list.pop(tree_depth)
+                        tree_depth -= 1
+                        if tree_depth < 0:
                             lock = False
                     else:
                         lock = False
-
-            self.print_tree(it, max_value, max_index, divide_values_list)
+            self.print_tree(it, max_value, max_index)
             it += 1
 
-    def print_tree(self, it, max_value, max_index, divide_values_list):
+    def print_tree(self, it, max_value, max_index):
         if it == 1:
             print("A{0}:".format(max_index))
         else:
             if max_value != 0:
-                print("{0}{1}{2}A{3}:".format("------" * self.level_list[it - 1], divide_values_list[it-1], "--", max_index))
+                print("{0}{1}{2}A{3}:".format("------" * self.tree_depth_list[it - 1], self.attribute_value_list[it - 1], "--", max_index))
             else:
-                print("{0}{1}".format("------" * self.level_list[it - 1], divide_values_list[it-1]))
+                print("{0}{1}".format("------" * self.tree_depth_list[it - 1], self.attribute_value_list[it - 1]))
 
 
 init = Initial()
