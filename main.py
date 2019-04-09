@@ -132,7 +132,7 @@ class Initial:
         it = 1
         locker_list = []
         locker_level = -1
-        x = [""]
+        divide_values_list = [""]
 
         for node in node_list:
             node.create_structures()
@@ -147,7 +147,7 @@ class Initial:
                 locker_list.append([0, len(children_list)])
                 locker_level += 1
                 for child in children_list:
-                    x.insert(it, child)
+                    divide_values_list.insert(it, child)
                     node_list.insert(it, Program(children_list[child], node.number_of_columns))
                     self.level_list.insert(it, locker_level + 1)
             else:
@@ -161,18 +161,17 @@ class Initial:
                     else:
                         lock = False
 
-            self.print_tree(it, max_value, max_index, x)
+            self.print_tree(it, max_value, max_index, divide_values_list)
             it += 1
-        print(self.level_list)
 
-    def print_tree(self, it, max_value, max_index, x):
+    def print_tree(self, it, max_value, max_index, divide_values_list):
         if it == 1:
             print("A{0}:".format(max_index))
         else:
             if max_value != 0:
-                print("{0}{1}{2}A{3}:".format("------" * self.level_list[it - 1], int(x[it-1]),"--", max_index))
+                print("{0}{1}{2}A{3}:".format("------" * self.level_list[it - 1], divide_values_list[it-1], "--", max_index))
             else:
-                print("{0}{1}".format("------" * self.level_list[it - 1], int(x[it-1])))
+                print("{0}{1}".format("------" * self.level_list[it - 1], divide_values_list[it-1]))
 
 
 init = Initial()
