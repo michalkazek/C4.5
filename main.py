@@ -150,14 +150,14 @@ class Initial:
                 self.decisions.append('')
                 tree_depth += 1
                 for child in children_list:
-                    self.attribute_value_list.insert(it, child)
+                    self.attribute_value_list.insert(it, int(child))
                     node_list.insert(it, Program(children_list[child], node.number_of_columns))
                     self.tree_depth_list.insert(it, tree_depth + 1)
             else:
-                self.divide.append('')
+                #self.divide.append('')
                 for x in children_list:
                     tmp = children_list[x][0][node.number_of_attributes]
-                self.decisions.append(tmp)
+                self.decisions.append(int(tmp))
                 while lock:
                     children_number_list[tree_depth][0] += 1
                     if children_number_list[tree_depth][0] == children_number_list[tree_depth][1]:
@@ -187,5 +187,36 @@ class Initial:
                 print("{0}{1}".format("------" * self.tree_depth_list[it - 1], self.attribute_value_list[it - 1]))
 
 
+class Testing:
+
+    def __init__(self, input_attribute_value_list, input_tree_depth_list, input_decisions, input_divide):
+        self.attribute_value_list = input_attribute_value_list
+        self.tree_depth_list = input_tree_depth_list
+        self.decisions = input_decisions
+        self.divide = input_divide
+        self.unique_values = set(self.decisions)
+        self.unique_values.remove("")
+        self.error_matrix = [[0 for x in range(len(self.unique_values))] for x in range(len(self.unique_values))]
+
+    def test_rows(self):
+        input_row = [0,0,0,0,1]
+        current_deep_level = 1
+        quit = False
+        x = 0
+
+        while not quit:
+            for y in range(1, len(self.tree_depth_list)):
+                if input_row[x] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
+                    self.error_matrix[self.decisions[y]][input_row[-1]] += 1
+                    quit = True
+        print(self.error_matrix)
+
+
+
+
 init = Initial()
 init.start()
+a, b, c, d = init.return_decision_tree()
+
+test = Testing(a, b, c, d)
+test.test_rows()
