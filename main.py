@@ -199,16 +199,17 @@ class Testing:
         self.error_matrix = [[0 for x in range(len(self.unique_values))] for x in range(len(self.unique_values))]
 
     def test_rows(self):
-        input_row = [0,0,0,0,1]
+        input_row = [1,0,1,1,0]
         current_deep_level = 1
-        quit = False
-        x = 0
+        divide_index = 0
 
-        while not quit:
-            for y in range(1, len(self.tree_depth_list)):
-                if input_row[x] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
+        for y in range(1, len(self.tree_depth_list)):
+            if input_row[self.divide[divide_index]] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
+                if self.decisions[y] is not '':
                     self.error_matrix[self.decisions[y]][input_row[-1]] += 1
-                    quit = True
+                else:
+                    current_deep_level += 1
+                    divide_index += 1
         print(self.error_matrix)
 
 
