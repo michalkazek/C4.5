@@ -123,16 +123,19 @@ class Initial:
     def __init__(self):
         self.tree_depth_list = [0]
         self.attribute_value_list = [""]
+        self.decisions = []
+        self.divide = []
 
     def start(self):
         fr = FileReader()
-        fr.get_data_from_file("test2.txt")
+        fr.get_data_from_file("test3.txt")
         fr.split_row_from_input_file()
         node_list = [Program(fr.input_matrix, fr.number_of_columns)]
 
         children_number_list = []
         tree_depth = -1
         it = 1
+
         for node in node_list:
             node.create_structures()
             node.count_number_of_values()
@@ -142,13 +145,19 @@ class Initial:
             children_list, max_value, max_index = node.divide_tree()
             lock = True
             if max_value != 0:
+                self.divide.append(max_index)
                 children_number_list.append([0, len(children_list)])
+                self.decisions.append('')
                 tree_depth += 1
                 for child in children_list:
                     self.attribute_value_list.insert(it, child)
                     node_list.insert(it, Program(children_list[child], node.number_of_columns))
                     self.tree_depth_list.insert(it, tree_depth + 1)
             else:
+                self.divide.append('')
+                for x in children_list:
+                    tmp = children_list[x][0][node.number_of_attributes]
+                self.decisions.append(tmp)
                 while lock:
                     children_number_list[tree_depth][0] += 1
                     if children_number_list[tree_depth][0] == children_number_list[tree_depth][1]:
@@ -158,8 +167,15 @@ class Initial:
                             lock = False
                     else:
                         lock = False
-            self.print_tree(it, max_value, max_index)
+            #self.print_tree(it, max_value, max_index)
             it += 1
+        print("Values",self.attribute_value_list)
+        print("Level",self.tree_depth_list)
+        print("Dec",self.decisions)
+        print("Divide", self.divide)
+
+    def return_decision_tree(self):
+        return self.attribute_value_list, self.tree_depth_list, self.decisions, self.divide
 
     def print_tree(self, it, max_value, max_index):
         if it == 1:
