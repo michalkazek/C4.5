@@ -30,8 +30,9 @@ class FileReader:
                 self.test_matrix.append(self.input_matrix[sequence_list[it]])
             else:
                 self.tree_matrix.append(self.input_matrix[sequence_list[it]])
-        print(self.test_matrix)
-        print(self.tree_matrix)
+
+    def get_test_matrix(self):
+        return self.test_matrix
 
 class Program:
 
@@ -145,7 +146,8 @@ class Initial:
         fr.get_data_from_file("test2.txt")
         fr.split_row_from_input_file()
         fr.divide_data()
-        node_list = [Program(fr.input_matrix, fr.number_of_columns)]
+        test_matrix = fr.get_test_matrix()
+        node_list = [Program(fr.tree_matrix, fr.number_of_columns)]
 
         children_number_list = []
         tree_depth = -1
@@ -182,15 +184,16 @@ class Initial:
                             lock = False
                     else:
                         lock = False
-            #self.print_tree(it, max_value, max_index)
+            self.print_tree(it, max_value, max_index)
             it += 1
         print("Values",self.attribute_value_list)
         print("Level",self.tree_depth_list)
         print("Dec",self.decisions)
         print("Divide", self.divide)
+        return test_matrix
 
     def return_decision_tree(self):
-        return self.attribute_value_list, self.tree_depth_list, self.decisions, self.divide
+        return self.attribute_value_list, self.tree_depth_list, self.decisions, self.divide,
 
     def print_tree(self, it, max_value, max_index):
         if it == 1:
@@ -204,35 +207,37 @@ class Initial:
 
 class Testing:
 
-    def __init__(self, input_attribute_value_list, input_tree_depth_list, input_decisions, input_divide):
+    def __init__(self, input_attribute_value_list, input_tree_depth_list, input_decisions, input_divide, input_test_matrix):
         self.attribute_value_list = input_attribute_value_list
         self.tree_depth_list = input_tree_depth_list
         self.decisions = input_decisions
         self.divide = input_divide
+        self.test_matrix = input_test_matrix
         self.unique_values = set(self.decisions)
         self.unique_values.remove("")
         self.error_matrix = [[0 for x in range(len(self.unique_values))] for x in range(len(self.unique_values))]
 
     def test_rows(self):
-        input_row = [1,0,1,1,0]
+        #input_row = [1,0,1,1,0]
         current_deep_level = 1
         divide_index = 0  # index of self.divide value
-
-        for y in range(1, len(self.tree_depth_list)):
-            if input_row[self.divide[divide_index]] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
-                if self.decisions[y] is not '':
-                    self.error_matrix[self.decisions[y]][input_row[-1]] += 1
-                else:
-                    current_deep_level += 1
-                    divide_index += 1
+        for input_row in self.test_matrix:
+            print(input_row)
+            for y in range(1, len(self.tree_depth_list)):
+                if input_row[self.divide[divide_index]] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
+                    if self.decisions[y] is not '':
+                        self.error_matrix[self.decisions[y]][input_row[-1]] += 1
+                    else:
+                        current_deep_level += 1
+                        divide_index += 1
         print(self.error_matrix)
 
 
 
 
 init = Initial()
-init.start()
+test = init.start()
 a, b, c, d = init.return_decision_tree()
 
-test = Testing(a, b, c, d)
+test = Testing(a, b, c, d, test)
 test.test_rows()
