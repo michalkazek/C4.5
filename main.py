@@ -24,7 +24,7 @@ class FileReader:
 
     def divide_data(self):
         sequence_list = [x for x in range(len(self.input_matrix))]
-        #random.shuffle(sequence_list)
+        random.shuffle(sequence_list)
         for it in range(len(self.input_matrix)):
             if it < self.input_percent:
                 self.test_matrix.append(self.input_matrix[sequence_list[it]])
@@ -142,7 +142,7 @@ class Initial:
         self.divide = []
 
     def start(self):
-        fr = FileReader(0)
+        fr = FileReader(3)
         fr.get_data_from_file("test2.txt")
         fr.split_row_from_input_file()
         fr.divide_data()
@@ -225,24 +225,28 @@ class Testing:
             self.error_matrix[0][x] = self.unique_values[x - 1]
 
     def test_rows(self):
-        input_row = ['1','0','1','1','0']
+        #input_row = ['1','0','1','1','0']
         current_deep_level = 1
         divide_index = 0  # index of self.divide value
+        print("Unique", self.unique_values)
 
-        print(self.unique_values)
-        for y in range(1, len(self.tree_depth_list)):
-            if input_row[self.divide[divide_index]] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
-                if self.decisions[y] is not '':
-                    for x in range(1, len(self.error_matrix)):
-                        if self.decisions[y] == self.error_matrix[x][0]:
-                            for z in range(1, len(self.error_matrix)):
-                                if input_row[-1] == self.error_matrix[0][z]:
-                                    self.error_matrix[x][z] += 1
-                    print()#self.error_matrix[self.decisions.index(y)][input_row[-1].index()] += 1
-                else:
-                    current_deep_level += 1
-                    divide_index += 1
-        #print(self.error_matrix)
+        for input_row in self.test_matrix:
+            flag = True
+            y = 1
+            while flag:
+                if input_row[self.divide[divide_index]] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
+                    if self.decisions[y] is not '':
+                        for x in range(1, len(self.error_matrix)):
+                            if self.decisions[y] == self.error_matrix[x][0]:
+                                for z in range(1, len(self.error_matrix)):
+                                    if input_row[-1] == self.error_matrix[0][z]:
+                                        self.error_matrix[x][z] += 1
+                                        flag = False
+                                        break
+                    else:
+                        current_deep_level += 1
+                        divide_index += 1
+                y += 1
 
     def print_matrix(self):
         for x in self.error_matrix:
