@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 import math
+import random
 
 
 class FileReader:
 
-    def __init__(self):
+    def __init__(self, input_percent):
+        self.input_percent = input_percent
         self.file = ""
         self.number_of_columns = 0
         self.input_matrix = []
+        self.test_matrix = []
+        self.tree_matrix = []
 
     def get_data_from_file(self, path):
         self.file = open(path, "r")
@@ -18,6 +22,16 @@ class FileReader:
             self.number_of_columns = len(splitted_row)
             self.input_matrix.append(splitted_row)
 
+    def divide_data(self):
+        sequence_list = [x for x in range(len(self.input_matrix))]
+        random.shuffle(sequence_list)
+        for it in range(len(self.input_matrix)):
+            if it < self.input_percent:
+                self.test_matrix.append(self.input_matrix[sequence_list[it]])
+            else:
+                self.tree_matrix.append(self.input_matrix[sequence_list[it]])
+        print(self.test_matrix)
+        print(self.tree_matrix)
 
 class Program:
 
@@ -127,9 +141,10 @@ class Initial:
         self.divide = []
 
     def start(self):
-        fr = FileReader()
-        fr.get_data_from_file("test3.txt")
+        fr = FileReader(3)
+        fr.get_data_from_file("test2.txt")
         fr.split_row_from_input_file()
+        fr.divide_data()
         node_list = [Program(fr.input_matrix, fr.number_of_columns)]
 
         children_number_list = []
@@ -201,7 +216,7 @@ class Testing:
     def test_rows(self):
         input_row = [1,0,1,1,0]
         current_deep_level = 1
-        divide_index = 0
+        divide_index = 0  # index of self.divide value
 
         for y in range(1, len(self.tree_depth_list)):
             if input_row[self.divide[divide_index]] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
