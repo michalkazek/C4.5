@@ -24,7 +24,7 @@ class FileReader:
 
     def divide_data(self):
         sequence_list = [x for x in range(len(self.input_matrix))]
-        random.shuffle(sequence_list)
+        #random.shuffle(sequence_list)
         for it in range(len(self.input_matrix)):
             if it < self.input_percent:
                 self.test_matrix.append(self.input_matrix[sequence_list[it]])
@@ -142,7 +142,7 @@ class Initial:
         self.divide = []
 
     def start(self):
-        fr = FileReader(3)
+        fr = FileReader(0)
         fr.get_data_from_file("test2.txt")
         fr.split_row_from_input_file()
         fr.divide_data()
@@ -167,14 +167,14 @@ class Initial:
                 self.decisions.append('')
                 tree_depth += 1
                 for child in children_list:
-                    self.attribute_value_list.insert(it, int(child))
+                    self.attribute_value_list.insert(it, child)
                     node_list.insert(it, Program(children_list[child], node.number_of_columns))
                     self.tree_depth_list.insert(it, tree_depth + 1)
             else:
                 #self.divide.append('')
                 for x in children_list:
                     tmp = children_list[x][0][node.number_of_attributes]
-                self.decisions.append(int(tmp))
+                self.decisions.append(tmp)
                 while lock:
                     children_number_list[tree_depth][0] += 1
                     if children_number_list[tree_depth][0] == children_number_list[tree_depth][1]:
@@ -215,24 +215,38 @@ class Testing:
         self.test_matrix = input_test_matrix
         self.unique_values = set(self.decisions)
         self.unique_values.remove("")
-        self.error_matrix = [[0 for x in range(len(self.unique_values))] for x in range(len(self.unique_values))]
+        self.unique_values = list(self.unique_values)
+        self.error_matrix = [[0 for x in range(len(self.unique_values)+1)] for x in range(len(self.unique_values)+1)]
+
+    def fill_error_matrix(self):
+        self.error_matrix[0][0] = ''
+        for x in range(1, len(self.unique_values)+1):
+            self.error_matrix[x][0] = self.unique_values[x-1]
+            self.error_matrix[0][x] = self.unique_values[x - 1]
 
     def test_rows(self):
-        #input_row = [1,0,1,1,0]
+        input_row = ['1','0','1','1','0']
         current_deep_level = 1
         divide_index = 0  # index of self.divide value
-        for input_row in self.test_matrix:
-            print(input_row)
-            for y in range(1, len(self.tree_depth_list)):
-                if input_row[self.divide[divide_index]] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
-                    if self.decisions[y] is not '':
-                        self.error_matrix[self.decisions[y]][input_row[-1]] += 1
-                    else:
-                        current_deep_level += 1
-                        divide_index += 1
-        print(self.error_matrix)
 
+        print(self.unique_values)
+        for y in range(1, len(self.tree_depth_list)):
+            if input_row[self.divide[divide_index]] == self.attribute_value_list[y] and current_deep_level == self.tree_depth_list[y]:
+                if self.decisions[y] is not '':
+                    for x in range(1, len(self.error_matrix)):
+                        if self.decisions[y] == self.error_matrix[x][0]:
+                            for z in range(1, len(self.error_matrix)):
+                                if input_row[-1] == self.error_matrix[0][z]:
+                                    self.error_matrix[x][z] += 1
+                    print()#self.error_matrix[self.decisions.index(y)][input_row[-1].index()] += 1
+                else:
+                    current_deep_level += 1
+                    divide_index += 1
+        #print(self.error_matrix)
 
+    def print_matrix(self):
+        for x in self.error_matrix:
+            print(x)
 
 
 init = Initial()
@@ -240,4 +254,6 @@ test = init.start()
 a, b, c, d = init.return_decision_tree()
 
 test = Testing(a, b, c, d, test)
+test.fill_error_matrix()
 test.test_rows()
+test.print_matrix()
