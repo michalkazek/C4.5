@@ -12,6 +12,8 @@ class FileReader:
         self.input_matrix = []
         self.test_matrix = []
         self.tree_matrix = []
+        self.number_of_items = []
+        self.repairing_values = []
 
     def get_data_from_file(self, path):
         self.file = open(path, "r")
@@ -21,6 +23,38 @@ class FileReader:
             splitted_row = (row.strip()).split(",")
             self.number_of_columns = len(splitted_row)
             self.input_matrix.append(splitted_row)
+
+    def create_structures(self):
+        for it in range(self.number_of_columns):
+            self.number_of_items.append({})
+
+    def count_number_of_values(self):
+        for row in self.input_matrix:
+            for it in range(self.number_of_columns):
+                if row[it] in self.number_of_items[it]:
+                    self.number_of_items[it][row[it]] += 1
+                else:
+                    self.number_of_items[it][row[it]] = 1
+
+    def find_best_values_to_repair_data(self):
+        self.create_structures()
+        self.count_number_of_values()
+        for x in range(len(self.number_of_items)):
+            best_value = 0
+            quantity_of_best_value = 0
+            for y in self.number_of_items[x]:
+                if quantity_of_best_value < self.number_of_items[x][y]:
+                    quantity_of_best_value = self.number_of_items[x][y]
+                    best_value = y
+            self.repairing_values.append(best_value)
+        print(self.repairing_values)
+
+    def repair_data(self):
+        self.find_best_values_to_repair_data()
+        for x in range(len(self.input_matrix)):
+            for y in range(len(self.input_matrix[x])):
+                if self.input_matrix[x][y] == "?":
+                    self.input_matrix[x][y] = self.repairing_values[y]
 
     def divide_data(self):
         sequence_list = [x for x in range(len(self.input_matrix))]
@@ -33,6 +67,7 @@ class FileReader:
 
     def get_test_matrix(self):
         return self.test_matrix
+
 
 class Program:
 
@@ -143,8 +178,9 @@ class Initial:
 
     def start(self):
         fr = FileReader(3)
-        fr.get_data_from_file("test2.txt")
+        fr.get_data_from_file("test4.txt")
         fr.split_row_from_input_file()
+        fr.repair_data()
         fr.divide_data()
         test_matrix = fr.get_test_matrix()
         node_list = [Program(fr.tree_matrix, fr.number_of_columns)]
@@ -184,7 +220,7 @@ class Initial:
                             lock = False
                     else:
                         lock = False
-            self.print_tree(it, max_value, max_index)
+            #self.print_tree(it, max_value, max_index)
             it += 1
         print("Values",self.attribute_value_list)
         print("Level",self.tree_depth_list)
@@ -252,12 +288,15 @@ class Testing:
         for x in self.error_matrix:
             print(x)
 
+    #def calculate_recall(self):
+
+
 
 init = Initial()
 test = init.start()
 a, b, c, d = init.return_decision_tree()
 
-test = Testing(a, b, c, d, test)
-test.fill_error_matrix()
-test.test_rows()
-test.print_matrix()
+#test = Testing(a, b, c, d, test)
+#test.fill_error_matrix()
+#test.test_rows()
+#test.print_matrix()
