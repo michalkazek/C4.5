@@ -290,7 +290,50 @@ class Testing:
                     else:
                         current_deep_level += 1
                         divide_index += 1
-                y += 1
+                if y == len(self.attribute_value_list)-1:
+                    flag = False
+                else:
+                    y += 1
+
+    def calculate_parameteres(self):
+        #dokladnosc : tp+tn/tp+tn+fp+fn
+
+        for it in range(1, len(self.error_matrix[0])):
+            searching_class = self.error_matrix[0][it]
+            tp, tn, fp, fn = 0, 0, 0, 0
+            for x in range(1, len(self.error_matrix)):
+                for y in range(1, len(self.error_matrix[x])):
+                    value = self.error_matrix[x][y]
+                    if self.error_matrix[0][x] == self.error_matrix[y][0]:
+                        if self.error_matrix[0][x] == searching_class:
+                            tp += value
+                        else:
+                            tn += value
+                    elif self.error_matrix[y][0] == searching_class:
+                        fp += value
+                    elif self.error_matrix[0][x] == searching_class:
+                        fn += value
+                        #print(self.error_matrix[x][y])
+            print("Tp: {0}, Tn: {1}, Fp: {2}, Fn: {3}".format(tp, tn, fp, fn))
+
+
+
+
+
+
+
+                # value = self.error_matrix[x][y]
+                # if x == y:
+                #     if x == 1 and y == 1:
+                #         tp += value
+                #     else:
+                #         tn += value
+                # elif x == 1:
+                #     fn += value
+                # elif y == 1:
+                #     fp += value
+                # print(self.error_matrix[x][y])
+
 
     def print_matrix(self):
         for x in self.error_matrix:
@@ -308,3 +351,4 @@ test = Testing(a, b, c, d, test)
 test.fill_error_matrix()
 test.test_rows()
 test.print_matrix()
+test.calculate_parameteres()
