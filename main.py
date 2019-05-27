@@ -14,6 +14,7 @@ class FileReader:
         self.tree_matrix = []
         self.number_of_items = []
         self.repairing_values = []
+        self.decision_classes_rows = {}
 
     def get_data_from_file(self, path):
         self.file = open(path, "r")
@@ -29,12 +30,19 @@ class FileReader:
             self.number_of_items.append({})
 
     def count_number_of_values(self):
+        row_number = 0
         for row in self.input_matrix:
             for it in range(self.number_of_columns):
                 if row[it] in self.number_of_items[it]:
                     self.number_of_items[it][row[it]] += 1
                 else:
                     self.number_of_items[it][row[it]] = 1
+                if it == self.number_of_columns-1:
+                    if row[it] not in self.decision_classes_rows:
+                        self.decision_classes_rows[row[it]] = []
+                    self.decision_classes_rows[row[it]].append(row_number)
+            row_number += 1
+        #print(self.decision_classes_rows)
 
     def find_best_values_to_repair_data(self):
         self.create_structures()
@@ -47,7 +55,6 @@ class FileReader:
                     quantity_of_best_value = self.number_of_items[x][y]
                     best_value = y
             self.repairing_values.append(best_value)
-        print(self.repairing_values)
 
     def repair_data(self):
         self.find_best_values_to_repair_data()
@@ -57,13 +64,14 @@ class FileReader:
                     self.input_matrix[x][y] = self.repairing_values[y]
 
     def divide_data(self):
-        sequence_list = [x for x in range(len(self.input_matrix))]
-        random.shuffle(sequence_list)
-        for it in range(len(self.input_matrix)):
-            if it < self.input_percent:
-                self.test_matrix.append(self.input_matrix[sequence_list[it]])
-            else:
-                self.tree_matrix.append(self.input_matrix[sequence_list[it]])
+        for x in self.decision_classes_rows:
+            sequence_list = self.decision_classes_rows[x]
+            random.shuffle(sequence_list)
+            for it in range(len(sequence_list)):
+                if it < len(sequence_list)//2:
+                    self.test_matrix.append(self.input_matrix[sequence_list[it]])
+                else:
+                    self.tree_matrix.append(self.input_matrix[sequence_list[it]])
 
     def get_test_matrix(self):
         return self.test_matrix
@@ -220,7 +228,7 @@ class Initial:
                             lock = False
                     else:
                         lock = False
-            #self.print_tree(it, max_value, max_index)
+            self.print_tree(it, max_value, max_index)
             it += 1
         print("Values",self.attribute_value_list)
         print("Level",self.tree_depth_list)
@@ -296,7 +304,7 @@ init = Initial()
 test = init.start()
 a, b, c, d = init.return_decision_tree()
 
-#test = Testing(a, b, c, d, test)
-#test.fill_error_matrix()
-#test.test_rows()
-#test.print_matrix()
+test = Testing(a, b, c, d, test)
+test.fill_error_matrix()
+test.test_rows()
+test.print_matrix()
