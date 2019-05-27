@@ -230,10 +230,10 @@ class Initial:
                         lock = False
             self.print_tree(it, max_value, max_index)
             it += 1
-        print("Values",self.attribute_value_list)
-        print("Level",self.tree_depth_list)
-        print("Dec",self.decisions)
-        print("Divide", self.divide)
+        #print("Values",self.attribute_value_list)
+        #print("Level",self.tree_depth_list)
+        #print("Dec",self.decisions)
+        #print("Divide", self.divide)
         return test_matrix
 
     def return_decision_tree(self):
@@ -272,7 +272,7 @@ class Testing:
         #input_row = ['1','0','1','1','0']
         current_deep_level = 1
         divide_index = 0  # index of self.divide value
-        print("Unique", self.unique_values)
+        #print("Unique", self.unique_values)
 
         for input_row in self.test_matrix:
             flag = True
@@ -297,6 +297,9 @@ class Testing:
 
     def calculate_parameteres(self):
         #dokladnosc : tp+tn/tp+tn+fp+fn
+        #czulosc: tp/tp+fn
+        #precyzja: tp/tp+fp
+        #f-miara: tp+tp/tp+tp+fp+fn
 
         for it in range(1, len(self.error_matrix[0])):
             searching_class = self.error_matrix[0][it]
@@ -315,32 +318,43 @@ class Testing:
                         fn += value
                         #print(self.error_matrix[x][y])
             print("Tp: {0}, Tn: {1}, Fp: {2}, Fn: {3}".format(tp, tn, fp, fn))
+            self.calculate_accuracy(tp, tn, fp, fn, searching_class)
+            self.calculate_precision(tp, fp, searching_class)
+            self.calculate_recall(tp, fn, searching_class)
+            self.calculate_f1_scope(tp, fp, fn, searching_class)
+            print()
 
+    def calculate_accuracy(self, tp, tn, fp, fn, dec_class):
+        try:
+            accuracy = (tp+tn)/(tp+tn+fp+fn)
+        except:
+            accuracy = 0
+        print("Accuracy for class: {0} is {1:.2f} %".format(dec_class, accuracy*100))
 
+    def calculate_recall(self, tp, fn, dec_class):
+        try:
+            recall = tp/(tp+fn)
+        except:
+            recall = 0
+        print("Recall for class: {0} is {1:.2f} %".format(dec_class, recall*100))
 
+    def calculate_precision(self, tp, fp, dec_class):
+        try:
+            precision = tp/(tp+fp)
+        except:
+            precision = 0
+        print("Precision for class: {0} is {1:.2f} %".format(dec_class, precision*100))
 
-
-
-
-                # value = self.error_matrix[x][y]
-                # if x == y:
-                #     if x == 1 and y == 1:
-                #         tp += value
-                #     else:
-                #         tn += value
-                # elif x == 1:
-                #     fn += value
-                # elif y == 1:
-                #     fp += value
-                # print(self.error_matrix[x][y])
-
+    def calculate_f1_scope(self, tp, fp, fn, dec_class):
+        try:
+            f1_scope = (tp+tp)/(tp+tp+fp+fn)
+        except:
+            f1_scope = 0
+        print("F1 scope for class: {0} is {1:.2f} %".format(dec_class, f1_scope*100))
 
     def print_matrix(self):
         for x in self.error_matrix:
             print(x)
-
-    #def calculate_recall(self):
-
 
 
 init = Initial()
@@ -350,5 +364,5 @@ a, b, c, d = init.return_decision_tree()
 test = Testing(a, b, c, d, test)
 test.fill_error_matrix()
 test.test_rows()
-test.print_matrix()
+#test.print_matrix()
 test.calculate_parameteres()
