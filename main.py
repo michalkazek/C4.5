@@ -42,7 +42,6 @@ class FileReader:
                         self.decision_classes_rows[row[it]] = []
                     self.decision_classes_rows[row[it]].append(row_number)
             row_number += 1
-        #print(self.decision_classes_rows)
 
     def find_best_values_to_repair_data(self):
         self.create_structures()
@@ -186,7 +185,7 @@ class Initial:
 
     def start(self):
         fr = FileReader(3)
-        fr.get_data_from_file("test4.txt")
+        fr.get_data_from_file("test2.txt")
         fr.split_row_from_input_file()
         fr.repair_data()
         fr.divide_data()
@@ -215,7 +214,6 @@ class Initial:
                     node_list.insert(it, Program(children_list[child], node.number_of_columns))
                     self.tree_depth_list.insert(it, tree_depth + 1)
             else:
-                #self.divide.append('')
                 for x in children_list:
                     tmp = children_list[x][0][node.number_of_attributes]
                 self.decisions.append(tmp)
@@ -269,7 +267,6 @@ class Testing:
             self.error_matrix[0][x] = self.unique_values[x - 1]
 
     def test_rows(self):
-        #input_row = ['1','0','1','1','0']
         current_deep_level = 1
         divide_index = 0  # index of self.divide value
         #print("Unique", self.unique_values)
@@ -296,11 +293,6 @@ class Testing:
                     y += 1
 
     def calculate_parameteres(self):
-        #dokladnosc : tp+tn/tp+tn+fp+fn
-        #czulosc: tp/tp+fn
-        #precyzja: tp/tp+fp
-        #f-miara: tp+tp/tp+tp+fp+fn
-
         for it in range(1, len(self.error_matrix[0])):
             searching_class = self.error_matrix[0][it]
             tp, tn, fp, fn = 0, 0, 0, 0
